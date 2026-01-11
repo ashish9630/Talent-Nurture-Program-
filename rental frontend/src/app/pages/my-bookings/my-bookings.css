@@ -1,0 +1,169 @@
+/* ===== BACKGROUND ===== */
+.page-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000000, #121212, #0f2027);
+  padding: 30px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  color: #00e676;
+}
+
+/* ===== EMPTY BOX ===== */
+.empty-box {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 40px;
+  border-radius: 14px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+/* ===== COUNT ===== */
+.count-box {
+  background: rgba(0, 230, 118, 0.15);
+  color: #00e676;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* ===== GRID ===== */
+.bookings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* ===== CARD ===== */
+.booking-card {
+  background: linear-gradient(145deg, #111, #1c1c1c);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+  transition: 0.4s;
+}
+
+.booking-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 40px rgba(0, 230, 118, 0.4);
+}
+
+/* ===== CARD HEADER ===== */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* ===== STATUS ===== */
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.approved {
+  background: rgba(0, 230, 118, 0.2);
+  color: #00e676;
+}
+
+.rejected {
+  background: rgba(255, 82, 82, 0.2);
+  color: #ff5252;
+}
+
+.pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+/* ===== INFO ===== */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.info-grid small {
+  color: #aaa;
+}
+
+.highlight {
+  color: #00e676;
+}
+
+/* ===== UPDATE BOX ===== */
+.update-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* ===== FOOTER ===== */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #aaa;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 10px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, #00e676, #00c853);
+  color: #000;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 15px #00e676;
+  transform: translateY(-2px);
+}
+
+.btn-success {
+  background: #00e676;
+  color: #000;
+}
+
+.btn-success:hover {
+  background: #00c853;
+}
+
+.btn-danger {
+  background: #ff5252;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #ff1744;
+}

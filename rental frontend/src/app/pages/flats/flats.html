@@ -1,0 +1,117 @@
+<div class="page-bg">
+  <!-- aapka poora existing HTML yahan rahe -->
+<div class="container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <h2>🏠 Flats for Rent</h2>
+    <div>
+      <button class="btn btn-success" (click)="goToMyBookings()">My Bookings</button>
+      <button class="btn btn-danger" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-box">
+    <h3>🔍 Filters</h3>
+
+    <!-- Rent Range -->
+    <div>
+      <label><strong>💰 Rent Range:</strong></label>
+      <div style="display:flex; gap:10px; margin-top:5px;">
+        <input type="number" [(ngModel)]="minRent" placeholder="Min Rent">
+        <span>to</span>
+        <input type="number" [(ngModel)]="maxRent" placeholder="Max Rent">
+      </div>
+    </div>
+
+    <!-- Amenities -->
+    <div style="margin-top:15px;">
+      <label><strong>🏢 Amenities:</strong></label>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px;">
+        <label><input type="checkbox" [(ngModel)]="filters.swimming_pool"> Swimming Pool</label>
+        <label><input type="checkbox" [(ngModel)]="filters.car_parking"> Car Parking</label>
+        <label><input type="checkbox" [(ngModel)]="filters.bike_parking"> Bike Parking</label>
+        <label><input type="checkbox" [(ngModel)]="filters.gym"> Gym</label>
+        <label><input type="checkbox" [(ngModel)]="filters.garden"> Garden</label>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div style="margin-top:15px; display:flex; gap:10px;">
+      <button class="btn btn-primary" (click)="applyFilters()">Apply Filters</button>
+      <button class="btn btn-secondary" (click)="clearFilters()">Clear Filters</button>
+    </div>
+  </div>
+
+  <!-- Results Count -->
+  <p class="primary"><strong>Found {{ filteredFlats.length }} flats</strong></p>
+
+  <!-- Flats Grid -->
+  <div class="flats-grid">
+
+    <div class="flat-card" *ngFor="let flat of filteredFlats">
+
+      <!-- Card Header -->
+      <div class="flat-header">
+        <h3>Apartment {{ flat.flat_no }}</h3>
+        <p>{{ flat.location }}</p>
+      </div>
+
+      <!-- Price -->
+      <div class="flat-price">
+        ₹ {{ flat.rent | number }} / Month
+      </div>
+
+      <!-- Body -->
+      <div class="flat-body">
+
+        <!-- Info -->
+        <div class="info-grid">
+          <div>📐 {{ flat.area_sqft }} sq.ft</div>
+          <div>🏠 1st Floor</div>
+          <div>🛏️ {{ flat.bedrooms }} Bedrooms</div>
+          <div>🚿 {{ flat.bathrooms }} Bathrooms</div>
+        </div>
+
+        <!-- Amenities -->
+        <div class="info-grid">
+          <div class="amenity success" *ngIf="flat.amenities.swimming_pool">🏊 Swimming Pool</div>
+          <div class="amenity success" *ngIf="flat.amenities.car_parking">🚗 Car Parking</div>
+          <div class="amenity success" *ngIf="flat.amenities.bike_parking">🚲 Bike Parking</div>
+          <div class="amenity danger" *ngIf="flat.amenities.gym">💪 Gym</div>
+        </div>
+
+        <!-- Status -->
+        <div class="status available" *ngIf="flat.available">✅ Available for Rent</div>
+        <div class="status unavailable" *ngIf="!flat.available">❌ Not Available</div>
+
+        <!-- Button -->
+        <button class="btn btn-primary"
+                (click)="bookFlat(flat.flat_no)"
+                [disabled]="!flat.available">
+          📋 {{ flat.available ? 'Book Now' : 'Not Available' }}
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="filteredFlats.length === 0" style="text-align:center; margin-top:40px;">
+    <h3>😔 No flats found</h3>
+    <button class="btn btn-primary" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Popup -->
+  <div class="popup-backdrop" *ngIf="showBookingPopup">
+    <div class="popup">
+      <h3>📋 Booking Status</h3>
+      <p>{{ bookingMessage }}</p>
+      <button class="btn btn-primary" (click)="closePopup()">OK</button>
+    </div>
+  </div>
+
+</div>
+</div>

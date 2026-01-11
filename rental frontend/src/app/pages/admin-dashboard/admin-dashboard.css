@@ -1,0 +1,134 @@
+/* ===== BACKGROUND ===== */
+.page-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000000, #121212, #0f2027);
+  padding: 30px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  color: #00e676;
+}
+
+/* ===== EMPTY BOX ===== */
+.empty-box {
+  background: rgba(255,255,255,0.08);
+  padding: 40px;
+  text-align: center;
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+}
+
+/* ===== TABLE WRAPPER ===== */
+.table-wrapper {
+  overflow-x: auto;
+  background: rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 15px;
+  backdrop-filter: blur(8px);
+}
+
+/* ===== TABLE ===== */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.admin-table thead {
+  background: linear-gradient(to right, #00e676, #00c853);
+  color: #000;
+}
+
+.admin-table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: 0.3s;
+}
+
+.admin-table tbody tr:hover {
+  background: rgba(0,230,118,0.08);
+}
+
+/* ===== STATUS ===== */
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.approved {
+  background: rgba(0,230,118,0.2);
+  color: #00e676;
+}
+
+.rejected {
+  background: rgba(255,82,82,0.2);
+  color: #ff5252;
+}
+
+.pending {
+  background: rgba(255,193,7,0.2);
+  color: #ffc107;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.btn-success {
+  background: #00e676;
+  color: #000;
+}
+
+.btn-success:hover {
+  background: #00c853;
+  box-shadow: 0 0 10px #00e676;
+}
+
+.btn-danger {
+  background: #ff5252;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #ff1744;
+  box-shadow: 0 0 10px #ff5252;
+}
+
+/* ===== MUTED TEXT ===== */
+.muted {
+  color: #aaa;
+  font-size: 13px;
+}

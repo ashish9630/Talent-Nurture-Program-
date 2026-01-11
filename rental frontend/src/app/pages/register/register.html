@@ -1,0 +1,113 @@
+<div style="
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(90deg, #8e5fb7, #2a7bc1);
+">
+
+  <div style="
+    max-width: 400px;
+    min-width: 350px;
+    width: 90%;
+    padding: 35px;
+    background: linear-gradient(180deg, #7fd0f0, #3fa9c9);
+    border-radius: 120px 20px 20px 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  ">
+
+    <h1 style="
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      font-weight: normal;
+      letter-spacing: 1px;
+    ">
+      Register
+    </h1>
+
+    <input type="email" placeholder="Email" [(ngModel)]="email"
+      style="
+        width: 100%;
+        padding: 12px;
+        margin: 12px 0;
+        border-radius: 25px;
+        border: 2px solid #333;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
+      ">
+
+    <div style="position: relative; margin: 12px 0;">
+      <input [type]="showPassword ? 'text' : 'password'"
+             placeholder="Password"
+             [(ngModel)]="password"
+        style="
+          width: 100%;
+          padding: 12px;
+          padding-right: 45px;
+          border-radius: 25px;
+          border: 2px solid #333;
+          font-size: 15px;
+          outline: none;
+          box-sizing: border-box;
+        ">
+
+      <span (click)="togglePassword()"
+        style="
+          position: absolute;
+          right: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          cursor: pointer;
+          font-size: 18px;
+        ">
+        {{ showPassword ? '🙈' : '👁️' }}
+      </span>
+    </div>
+
+    <select [(ngModel)]="role"
+      style="
+        width: 100%;
+        padding: 12px;
+        margin: 12px 0;
+        border-radius: 25px;
+        border: 2px solid #333;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
+      ">
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button (click)="register()"
+      style="
+        width: 100%;
+        padding: 12px;
+        border-radius: 30px;
+        border: none;
+        background: #222;
+        color: #4aa3ff;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+      ">
+      REGISTER
+    </button>
+
+    <p style="
+      text-align: center;
+      margin-top: 25px;
+      color: white;
+      font-size: 14px;
+    ">
+      Already have an account?
+      <a href="/login" style="color: white; text-decoration: underline;">
+        Login here
+      </a>
+    </p>
+
+  </div>
+</div>

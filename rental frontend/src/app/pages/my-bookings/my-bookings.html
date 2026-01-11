@@ -1,0 +1,73 @@
+<div class="page-bg">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h2>📋 My Bookings</h2>
+      <div>
+        <button class="btn btn-success" (click)="goToFlats()">Browse Flats</button>
+        <button class="btn btn-danger" (click)="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- No bookings -->
+    <div *ngIf="bookings.length === 0" class="empty-box">
+      <h3>😔 No bookings found</h3>
+      <p>You haven't made any booking requests yet.</p>
+      <button class="btn btn-primary" (click)="goToFlats()">Book a Flat Now!</button>
+    </div>
+
+    <!-- Count -->
+    <div *ngIf="bookings.length > 0" class="count-box">
+      Total Bookings: {{ bookings.length }}
+    </div>
+
+    <!-- Cards -->
+    <div class="bookings-grid">
+      <div class="booking-card" *ngFor="let booking of bookings">
+
+        <div class="card-header">
+          <h3>🏠 Apartment {{ booking.flat_no }}</h3>
+          <span class="status"
+                [ngClass]="{
+                  approved: booking.status === 'approved',
+                  rejected: booking.status === 'rejected',
+                  pending: booking.status === 'pending'
+                }">
+            {{ booking.status === 'approved' ? '✅ Approved' :
+               booking.status === 'rejected' ? '❌ Rejected' : '⏳ Pending' }}
+          </span>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <small>📅 Booking Date </small>
+            <strong>{{ booking.created_at | date:'medium' }}</strong>
+          </div>
+          <div>
+            <small>⏰ Since </small>
+            <strong class="highlight">{{ getTimeSinceBooking(booking.created_at) }}</strong>
+          </div>
+        </div>
+
+        <div *ngIf="booking.status !== 'pending' && booking.updated_at" class="update-box">
+          <div>
+            <small>{{ booking.status === 'approved' ? 'Approved At ' : 'Rejected At' }}</small>
+            <strong>{{ booking.updated_at | date:'medium' }}</strong>
+          </div>
+          <div>
+            <small>⏱️ Since Update </small>
+            <strong>{{ getTimeSinceBooking(booking.updated_at) }}</strong>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>ID: #{{ booking.booking_id || 'N/A' }}</span>
+          <span>{{ booking.updated_at ? (booking.updated_at | date:'short') : 'Not updated' }}</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
