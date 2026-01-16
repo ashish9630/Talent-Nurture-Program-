@@ -358,15 +358,15 @@ pip install flask flask-cors pymysql bcrypt pyjwt pytz
 
 2. **Setup MySQL Database:**
 ```sql
-CREATE DATABASE rental_portal;
+CREATE DATABASE rental;
 ```
 
 3. **Update Database Credentials in app_new.py:**
 ```python
 host='localhost'
 user='root'
-password='Singh@123'
-database='rental_portal'
+password='Ashish@9630'
+database='rental'
 ```
 
 4. **Run the Application:**

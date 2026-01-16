@@ -4,9 +4,9 @@ def add_sample_flats():
     conn = pymysql.connect(
         host='localhost',
         user='root',
-        password='Singh@123',
+        password='Ashish@9630',
         # only change this password
-        database='rental_portal',
+        database='rental',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )

@@ -20,8 +20,8 @@ def get_db_connection():
     conn = pymysql.connect(
         host='localhost',
         user='root',
-        password='Singh@123',
-        database='rental_portal',
+        password='Ashish@9630',
+        database='rental',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -86,6 +86,29 @@ def init_database():
         )
     except pymysql.IntegrityError:
         pass
+    
+    # Add sample flats 
+    sample_flats = [
+        ('A101', 25000, 'Sector 32', 2, 2, 1200, True, True, True, False, False),
+        ('B202', 18000, 'Sector 60', 1, 1, 800, False, True, True, True, False),
+        ('C303', 35000, 'Sector 21', 3, 2, 1500, True, True, True, True, True),
+        ('D404', 30000, 'Sector 30', 3, 2, 1000, True, True, True, True, True),
+        ('E505', 31000, 'Sector 35', 3, 2, 1700, True, True, True, True, True),
+        ('F606', 21000, 'Sector 50', 3, 2, 1500, True, True, True, True, True),
+        ('G707', 35000, 'Sector 36', 3, 2, 1500, True, True, True, True, True),
+        ('H808', 35000, 'Sector 31', 3, 2, 1500, True, True, True, True, True),
+        ('A202', 35000, 'Sector 23', 3, 2, 1500, True, True, True, True, True)
+        
+    ]
+    
+    for flat in sample_flats:
+        try:
+            cursor.execute(
+                "INSERT INTO flats (flat_no, rent, location, bedrooms, bathrooms, area_sqft, swimming_pool, car_parking, bike_parking, gym, garden) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                flat
+            )
+        except pymysql.IntegrityError:
+            pass
     
     conn.commit()
     conn.close()
@@ -303,16 +326,12 @@ def add_flat():
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('''
-            INSERT INTO flats (flat_no, rent, location, available, bedrooms, bathrooms, 
-                             area_sqft, swimming_pool, car_parking, bike_parking, gym, garden)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ''', (
-            data['flat_no'], data['rent'], data['location'], data.get('available', True),
-            data['bedrooms'], data['bathrooms'], data['area_sqft'],
-            data.get('swimming_pool', False), data.get('car_parking', False),
-            data.get('bike_parking', False), data.get('gym', False), data.get('garden', False)
-        ))
+        cursor.execute(
+            "INSERT INTO flats (flat_no, rent, location, bedrooms, bathrooms, area_sqft, swimming_pool, car_parking, bike_parking, gym, garden) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (data['flat_no'], data['rent'], data['location'], data['bedrooms'], data['bathrooms'], data['area_sqft'], 
+             data.get('swimming_pool', False), data.get('car_parking', False), data.get('bike_parking', False), 
+             data.get('gym', False), data.get('garden', False))
+        )
         conn.commit()
         conn.close()
         return jsonify({"message": "Flat added successfully"})
@@ -320,54 +339,6 @@ def add_flat():
         conn.close()
         return jsonify({"message": "Flat number already exists"}), 400
 
-@app.route('/admin/update-flat/<int:flat_id>', methods=['PUT'])
-@token_required
-@admin_required
-def update_flat(flat_id):
-    data = request.json
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        UPDATE flats SET flat_no=%s, rent=%s, location=%s, available=%s, bedrooms=%s, bathrooms=%s,
-                        area_sqft=%s, swimming_pool=%s, car_parking=%s, bike_parking=%s, gym=%s, garden=%s
-        WHERE id=%s
-    ''', (
-        data['flat_no'], data['rent'], data['location'], data.get('available', True),
-        data['bedrooms'], data['bathrooms'], data['area_sqft'],
-        data.get('swimming_pool', False), data.get('car_parking', False),
-        data.get('bike_parking', False), data.get('gym', False), data.get('garden', False),
-        flat_id
-    ))
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Flat updated successfully"})
-
-@app.route('/admin/delete-flat/<int:flat_id>', methods=['DELETE'])
-@token_required
-@admin_required
-def delete_flat(flat_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM flats WHERE id=%s", (flat_id,))
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Flat deleted successfully"})
-
 if __name__ == '__main__':
-    # Create database if not exists
-    try:
-        conn = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='Singh@123',
-            charset='utf8mb4'
-        )
-        cursor = conn.cursor()
-        cursor.execute("CREATE DATABASE IF NOT EXISTS rental_portal")
-        conn.close()
-    except Exception as e:
-        print(f"Database creation error: {e}")
-    
     init_database()
-    app.run(debug=True, port=8081)
+    app.run(debug=True, port=5000)

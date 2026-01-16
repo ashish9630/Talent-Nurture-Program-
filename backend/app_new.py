@@ -20,8 +20,8 @@ def get_db_connection():
     conn = pymysql.connect(
         host='localhost',
         user='root',
-        password='Singh@123',
-        database='rental_portal',
+        password='Ashish@9630',
+        database='rental',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -492,7 +492,7 @@ if __name__ == '__main__':
         conn = pymysql.connect(
             host='localhost',
             user='root',
-            password='Singh@123',
+            password='Ashish@9630',
             charset='utf8mb4'
         )
         cursor = conn.cursor()
