@@ -75,5 +75,17 @@
       </table>
     </div>
 
+    <!-- Popup Message -->
+    <div class="popup-backdrop" *ngIf="showPopup">
+      <div class="popup" [ngClass]="popupType">
+        <div class="popup-header">
+          <h3 *ngIf="popupType === 'success'">✅ Success</h3>
+          <h3 *ngIf="popupType === 'error'">❌ Error</h3>
+        </div>
+        <p>{{ popupMessage }}</p>
+        <button class="btn btn-primary" (click)="closePopup()">OK</button>
+      </div>
+    </div>
+
   </div>
 </div>
