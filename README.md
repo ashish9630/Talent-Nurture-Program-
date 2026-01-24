@@ -23,7 +23,7 @@ It provides secure authentication, role-based access control, and RESTful APIs f
 ## 🛠️ Tech Stack
 
 - **Backend:** Python, Flask
-- **Database:** SQLite3
+- **Database:** MySQL
 - **Authentication:** JWT (PyJWT)
 - **Security:** bcrypt
 - **Timezone Handling:** pytz
