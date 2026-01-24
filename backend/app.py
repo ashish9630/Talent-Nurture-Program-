@@ -17,11 +17,12 @@ def get_indian_time():
 
 # Database Connection
 def get_db_connection():
+    import os
     conn = pymysql.connect(
-        host='localhost',
-        user='root',
-        password='Ashish@9630',
-        database='rental',
+        host=os.getenv('DB_HOST', 'mysql'),
+        user=os.getenv('DB_USER', 'root'),
+        password=os.getenv('DB_PASSWORD', 'Ashish@9630'),
+        database=os.getenv('DB_NAME', 'rental'),
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -340,5 +341,25 @@ def add_flat():
         return jsonify({"message": "Flat number already exists"}), 400
 
 if __name__ == '__main__':
-    init_database()
-    app.run(debug=True, port=5000)
+    import time
+    import os
+    
+    # Wait for MySQL to be ready
+    max_retries = 30
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        try:
+            init_database()
+            print("Database initialized successfully!")
+            break
+        except Exception as e:
+            retry_count += 1
+            print(f"Database connection attempt {retry_count}/{max_retries} failed: {e}")
+            if retry_count < max_retries:
+                time.sleep(2)
+            else:
+                print("Failed to connect to database after maximum retries")
+                exit(1)
+    
+    app.run(debug=False, host='0.0.0.0', port=5000)

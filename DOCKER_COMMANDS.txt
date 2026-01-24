@@ -1,0 +1,32 @@
+# Docker Commands for Rental Portal
+
+## Build and Run with Docker Compose
+docker-compose up --build
+
+## Run in background
+docker-compose up -d
+
+## Stop containers
+docker-compose down
+
+## View logs
+docker-compose logs
+
+## Individual container commands:
+
+# Build backend image
+docker build -t rental-backend ./backend
+
+# Build frontend image  
+docker build -t rental-frontend "./rental frontend"
+
+# Run backend container
+docker run -p 5000:5000 rental-backend
+
+# Run frontend container
+docker run -p 4200:4200 rental-frontend
+
+## Access URLs:
+# Frontend: http://localhost:4200
+# Backend API: http://localhost:5000
+# MySQL: localhost:3306
