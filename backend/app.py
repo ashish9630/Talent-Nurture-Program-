@@ -19,7 +19,7 @@ def get_indian_time():
 def get_db_connection():
     import os
     conn = pymysql.connect(
-        host=os.getenv('DB_HOST', 'mysql'),
+        host=os.getenv('DB_HOST', 'localhost'),
         user=os.getenv('DB_USER', 'root'),
         password=os.getenv('DB_PASSWORD', 'Ashish@9630'),
         database=os.getenv('DB_NAME', 'rental'),
@@ -297,69 +297,9 @@ def admin_bookings():
             "created_at": str(b['created_at']),
             "updated_at": str(b['updated_at']) if b['updated_at'] else None
         })
+
     return jsonify(result)
 
-@app.route('/admin/update-status', methods=['POST'])
-@token_required
-@admin_required
-def update_status():
-    data = request.json
-    booking_id = data['booking_id']
-    new_status = data['status']
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE bookings SET status=%s, updated_at=%s WHERE id=%s",
-        (new_status, get_indian_time(), booking_id)
-    )
-    conn.commit()
-    conn.close()
-
-    return jsonify({"message": f"Status updated to {new_status}"})
-
-@app.route('/admin/add-flat', methods=['POST'])
-@token_required
-@admin_required
-def add_flat():
-    data = request.json
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute(
-            "INSERT INTO flats (flat_no, rent, location, bedrooms, bathrooms, area_sqft, swimming_pool, car_parking, bike_parking, gym, garden) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (data['flat_no'], data['rent'], data['location'], data['bedrooms'], data['bathrooms'], data['area_sqft'], 
-             data.get('swimming_pool', False), data.get('car_parking', False), data.get('bike_parking', False), 
-             data.get('gym', False), data.get('garden', False))
-        )
-        conn.commit()
-        conn.close()
-        return jsonify({"message": "Flat added successfully"})
-    except pymysql.IntegrityError:
-        conn.close()
-        return jsonify({"message": "Flat number already exists"}), 400
-
 if __name__ == '__main__':
-    import time
-    import os
-    
-    # Wait for MySQL to be ready
-    max_retries = 30
-    retry_count = 0
-    
-    while retry_count < max_retries:
-        try:
-            init_database()
-            print("Database initialized successfully!")
-            break
-        except Exception as e:
-            retry_count += 1
-            print(f"Database connection attempt {retry_count}/{max_retries} failed: {e}")
-            if retry_count < max_retries:
-                time.sleep(2)
-            else:
-                print("Failed to connect to database after maximum retries")
-                exit(1)
-    
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    init_database()
+    app.run(debug=True, host='0.0.0.0', port=5000)

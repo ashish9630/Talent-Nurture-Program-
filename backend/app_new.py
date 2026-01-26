@@ -265,24 +265,14 @@ def book_flat():
         conn.close()
         return jsonify({"message": "Flat not found"}), 404
     
-    if flat['status'] == 'Booked':
+    if flat['status'] != 'Available':
         conn.close()
-        return jsonify({"message": "Flat is already booked"}), 400
-    
-    # Check if user already has a pending booking for this flat
-    cursor.execute(
-        "SELECT id FROM booking WHERE user_email=%s AND flat_no=%s AND status='Pending'",
-        (user_email, flat_no)
-    )
-    existing_booking = cursor.fetchone()
-    
-    if existing_booking:
-        conn.close()
-        return jsonify({"message": "You already have a pending booking for this flat"}), 400
+        return jsonify({"message": "Flat is not available"}), 400
 
+    # Create booking
     cursor.execute(
-        "INSERT INTO booking (user_email, flat_no, status) VALUES (%s, %s, %s)",
-        (user_email, flat_no, 'Pending')
+        "INSERT INTO booking (user_email, flat_no) VALUES (%s, %s)",
+        (user_email, flat_no)
     )
     conn.commit()
     conn.close()
@@ -297,11 +287,10 @@ def my_bookings():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT b.id, b.flat_no, b.status, b.created_at, b.updated_at,
-               f.flat_type, f.price
+        SELECT b.id as booking_id, b.flat_no, f.flat_type, f.price, b.status, b.created_at, b.updated_at
         FROM booking b
         JOIN flats f ON b.flat_no = f.flat_no
-        WHERE b.user_email=%s 
+        WHERE b.user_email = %s
         ORDER BY b.created_at DESC
     ''', (user_email,))
     bookings = cursor.fetchall()
@@ -310,199 +299,17 @@ def my_bookings():
     result = []
     for b in bookings:
         result.append({
-            "booking_id": b['id'],
+            "booking_id": b['booking_id'],
             "flat_no": b['flat_no'],
             "flat_type": b['flat_type'],
             "price": float(b['price']),
             "status": b['status'],
             "created_at": str(b['created_at']),
-            "updated_at": str(b['updated_at']) if b['updated_at'] else None
+            "updated_at": str(b['updated_at'])
         })
 
     return jsonify(result)
-
-@app.route('/admin/bookings', methods=['GET'])
-@token_required
-@admin_required
-def admin_bookings():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT b.id, b.user_email, b.flat_no, b.status, b.created_at, b.updated_at,
-               f.flat_type, f.price, r.role as user_role
-        FROM booking b
-        JOIN flats f ON b.flat_no = f.flat_no
-        JOIN register r ON b.user_email = r.email
-        ORDER BY b.created_at DESC
-    ''')
-    bookings = cursor.fetchall()
-    conn.close()
-
-    result = []
-    for b in bookings:
-        result.append({
-            "booking_id": b['id'],
-            "user_email": b['user_email'],
-            "user_role": b['user_role'],
-            "flat_no": b['flat_no'],
-            "flat_type": b['flat_type'],
-            "price": float(b['price']),
-            "status": b['status'],
-            "created_at": str(b['created_at']),
-            "updated_at": str(b['updated_at']) if b['updated_at'] else None
-        })
-    return jsonify(result)
-
-@app.route('/admin/update-booking-status', methods=['POST'])
-@token_required
-@admin_required
-def update_booking_status():
-    data = request.json
-    booking_id = data['booking_id']
-    new_status = data['status']
-    
-    if new_status not in ['Pending', 'Approved', 'Rejected']:
-        return jsonify({"message": "Invalid status"}), 400
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # Get booking details
-    cursor.execute("SELECT flat_no, status FROM booking WHERE id=%s", (booking_id,))
-    booking = cursor.fetchone()
-    
-    if not booking:
-        conn.close()
-        return jsonify({"message": "Booking not found"}), 404
-    
-    # Update booking status
-    cursor.execute(
-        "UPDATE booking SET status=%s, updated_at=CURRENT_TIMESTAMP WHERE id=%s",
-        (new_status, booking_id)
-    )
-    
-    # Update flat status based on booking status
-    if new_status == 'Approved':
-        cursor.execute(
-            "UPDATE flats SET status='Booked', updated_at=CURRENT_TIMESTAMP WHERE flat_no=%s",
-            (booking['flat_no'],)
-        )
-    elif new_status == 'Rejected' and booking['status'] == 'Approved':
-        cursor.execute(
-            "UPDATE flats SET status='Available', updated_at=CURRENT_TIMESTAMP WHERE flat_no=%s",
-            (booking['flat_no'],)
-        )
-    
-    conn.commit()
-    conn.close()
-
-    return jsonify({"message": f"Booking status updated to {new_status}"})
-
-@app.route('/admin/add-flat', methods=['POST'])
-@token_required
-@admin_required
-def add_flat():
-    data = request.json
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute('''
-            INSERT INTO flats (flat_no, flat_type, price, status)
-            VALUES (%s, %s, %s, %s)
-        ''', (
-            data['flat_no'], 
-            data['flat_type'], 
-            data['price'], 
-            data.get('status', 'Available')
-        ))
-        conn.commit()
-        conn.close()
-        return jsonify({"message": "Flat added successfully"})
-    except pymysql.IntegrityError:
-        conn.close()
-        return jsonify({"message": "Flat number already exists"}), 400
-
-@app.route('/admin/users', methods=['GET'])
-@token_required
-@admin_required
-def get_users():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT id, email, role, created_at, updated_at
-        FROM register 
-        WHERE role = 'USER'
-        ORDER BY created_at DESC
-    ''')
-    users = cursor.fetchall()
-    conn.close()
-
-    result = []
-    for user in users:
-        result.append({
-            "id": user['id'],
-            "email": user['email'],
-            "role": user['role'],
-            "created_at": str(user['created_at']),
-            "updated_at": str(user['updated_at'])
-        })
-    return jsonify(result)
-
-@app.route('/admin/approve-user', methods=['POST'])
-@token_required
-@admin_required
-def approve_user():
-    data = request.json
-    user_id = data['user_id']
-    approval_status = data['approval_status']  # 'Approved' or 'Not Approved'
-    admin_email = request.user['email']
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # Check if admin record exists for this user
-    cursor.execute(
-        "SELECT id FROM admin WHERE approved_user_id=%s AND admin_email=%s",
-        (user_id, admin_email)
-    )
-    existing_record = cursor.fetchone()
-    
-    if existing_record:
-        # Update existing record
-        cursor.execute(
-            "UPDATE admin SET approval_status=%s, updated_at=CURRENT_TIMESTAMP WHERE id=%s",
-            (approval_status, existing_record['id'])
-        )
-    else:
-        # Create new admin approval record
-        cursor.execute('''
-            INSERT INTO admin (admin_email, admin_password, approved_user_id, approval_status)
-            SELECT %s, password, %s, %s FROM register WHERE email=%s
-        ''', (admin_email, user_id, approval_status, admin_email))
-    
-    conn.commit()
-    conn.close()
-    
-    return jsonify({"message": f"User {approval_status.lower()} successfully"})
 
 if __name__ == '__main__':
-    # Create database if not exists
-    try:
-        conn = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='Ashish@9630',
-            charset='utf8mb4'
-        )
-        cursor = conn.cursor()
-        cursor.execute("CREATE DATABASE IF NOT EXISTS rental_portal")
-        conn.close()
-    except Exception as e:
-        print(f"Database creation error: {e}")
-    
     init_database()
-    print("🚀 Flat Booking System Backend Started Successfully!")
-    print("📊 Database: rental_portal")
-    print("🔗 Server: http://localhost:8081")
-    app.run(debug=True, port=8081)
+    app.run(debug=True, host='0.0.0.0', port=8081)
