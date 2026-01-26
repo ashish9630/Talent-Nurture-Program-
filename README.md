@@ -4,13 +4,10 @@ A complete **Flat Booking System** built with **Flask (Backend)** and **Angular 
 
 ## 🚀 Live Demo
 
-- **Frontend:** [Live Demo Link](your-frontend-url)
-- **Backend API:** [API Documentation](your-backend-url)
+- **Frontend:** [Live Demo Link]
+- **Backend API:** [API Documentation]
 
-## 📸 Screenshots
 
-![Dashboard](screenshots/dashboard.png)
-![Booking System](screenshots/booking.png)
 
 ## ✨ Features
 
@@ -89,8 +86,7 @@ Web-of-hostel/
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/your-username/rental-portal.git
-cd rental-portal
+git clone https://github.com/ashish9630/Talent-Nurture-Program-.git
 ```
 
 ### 2. Backend Setup
