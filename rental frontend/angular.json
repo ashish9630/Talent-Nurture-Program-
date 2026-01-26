@@ -55,8 +55,9 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "host": "0.0.0.0",
-            "port": 4200
+            "host": "localhost",
+            "port": 4200,
+            "ssl": false
           },
           "configurations": {
             "production": {
