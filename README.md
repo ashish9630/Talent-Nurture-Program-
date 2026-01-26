@@ -86,8 +86,7 @@ Web-of-hostel/
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/your-username/rental-portal.git
-cd rental-portal
+git clone https://github.com/ashish9630/Talent-Nurture-Program-.git
 ```
 
 ### 2. Backend Setup
