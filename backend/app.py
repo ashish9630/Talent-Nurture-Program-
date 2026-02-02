@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import jwt
 import datetime
 import pymysql
 from functools import wraps
-import bcrypt
 import pytz
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -15,7 +15,6 @@ def get_indian_time():
     ist = pytz.timezone('Asia/Kolkata')
     return datetime.datetime.now(ist).strftime('%m/%d/%y, %I:%M:%S %p')
 
-# Database Connection
 def get_db_connection():
     import os
     conn = pymysql.connect(
@@ -55,9 +54,17 @@ def init_database():
             car_parking BOOLEAN DEFAULT FALSE,
             bike_parking BOOLEAN DEFAULT FALSE,
             gym BOOLEAN DEFAULT FALSE,
-            garden BOOLEAN DEFAULT FALSE
+            garden BOOLEAN DEFAULT FALSE,
+            image_url VARCHAR(255) DEFAULT NULL
         )
     ''')
+    
+    # Add image_url column if it doesn't exist
+    try:
+        cursor.execute("ALTER TABLE flats ADD COLUMN image_url VARCHAR(255) DEFAULT NULL")
+        conn.commit()
+    except pymysql.err.OperationalError:
+        pass  # Column already exists
     
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS bookings (
@@ -70,51 +77,46 @@ def init_database():
         )
     ''')
     
-    # Sample admin user (password: admin123)
     try:
-        cursor.execute(
-            "INSERT INTO users (email, password, role) VALUES (%s, %s, %s)",
-            ('admin@rental.com', 'admin123', 'admin')
-        )
+        cursor.execute("INSERT INTO users (email, password, role) VALUES (%s, %s, %s)", ('admin@rental.com', 'admin123', 'admin'))
     except pymysql.IntegrityError:
         pass
     
-    # Sample user (password: user123)
     try:
-        cursor.execute(
-            "INSERT INTO users (email, password, role) VALUES (%s, %s, %s)",
-            ('user@rental.com', 'user123', 'user')
-        )
+        cursor.execute("INSERT INTO users (email, password, role) VALUES (%s, %s, %s)", ('user@rental.com', 'user123', 'user'))
     except pymysql.IntegrityError:
         pass
     
-    # Add sample flats 
+    # Update existing flats with image URLs
+    cursor.execute("UPDATE flats SET image_url = '/images/flat1.jpg' WHERE flat_no = 'A101'")
+    cursor.execute("UPDATE flats SET image_url = '/images/flat2.jpg' WHERE flat_no = 'B202'")
+    cursor.execute("UPDATE flats SET image_url = '/images/flat3.jpg' WHERE flat_no = 'C303'")
+    cursor.execute("UPDATE flats SET image_url = '/images/flat4.jpg' WHERE flat_no = 'D404'")
+    cursor.execute("UPDATE flats SET image_url = '/images/flat5.jpg' WHERE flat_no = 'E505'")
+    cursor.execute("UPDATE flats SET image_url = '/images/flat6.jpg' WHERE flat_no = 'F606'")
+    cursor.execute("UPDATE flats SET image_url = '/images/flat7.jpg' WHERE flat_no = 'G707'")
+    cursor.execute("UPDATE flats SET image_url = '/images/flat8.jpg' WHERE flat_no = 'H808'")
+    
     sample_flats = [
-        ('A101', 25000, 'Sector 32', 2, 2, 1200, True, True, True, False, False),
-        ('B202', 18000, 'Sector 60', 1, 1, 800, False, True, True, True, False),
-        ('C303', 35000, 'Sector 21', 3, 2, 1500, True, True, True, True, True),
-        ('D404', 30000, 'Sector 30', 3, 2, 1000, True, True, True, True, True),
-        ('E505', 31000, 'Sector 35', 3, 2, 1700, True, True, True, True, True),
-        ('F606', 21000, 'Sector 50', 3, 2, 1500, True, True, True, True, True),
-        ('G707', 35000, 'Sector 36', 3, 2, 1500, True, True, True, True, True),
-        ('H808', 35000, 'Sector 31', 3, 2, 1500, True, True, True, True, True),
-        ('A202', 35000, 'Sector 23', 3, 2, 1500, True, True, True, True, True)
-        
+        ('A101', 25000, 'Sector 32', 2, 2, 1200, True, True, True, False, False, '/images/flat1.jpg'),
+        ('B202', 18000, 'Sector 60', 1, 1, 800, False, True, True, True, False, '/images/flat2.jpg'),
+        ('C303', 35000, 'Sector 21', 3, 2, 1500, True, True, True, True, True, '/images/flat3.jpg'),
+        ('D404', 30000, 'Sector 22', 3, 2, 1500, True, True, True, True, True, '/images/flat4.jpg'),
+        ('E505', 25000, 'Sector 32', 2, 2, 1200, True, True, True, False, False, '/images/flat5.jpg'),
+        ('F606', 18000, 'Sector 60', 1, 1, 800, False, True, True, True, False, '/images/flat6.jpg'),
+        ('G707', 35000, 'Sector 21', 3, 2, 1500, True, True, True, True, True, '/images/flat7.jpg'),
+        ('H808', 30000, 'Sector 22', 3, 2, 1500, True, True, True, True, True, '/images/flat8.jpg')
     ]
     
     for flat in sample_flats:
         try:
-            cursor.execute(
-                "INSERT INTO flats (flat_no, rent, location, bedrooms, bathrooms, area_sqft, swimming_pool, car_parking, bike_parking, gym, garden) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                flat
-            )
+            cursor.execute("INSERT INTO flats (flat_no, rent, location, bedrooms, bathrooms, area_sqft, swimming_pool, car_parking, bike_parking, gym, garden, image_url) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", flat)
         except pymysql.IntegrityError:
             pass
     
     conn.commit()
     conn.close()
 
-# JWT Decorators
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -146,7 +148,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# Routes
 @app.route('/')
 def home():
     return jsonify({"message": "Backend running successfully!!"})
@@ -161,10 +162,7 @@ def register():
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute(
-            "INSERT INTO users (email, password, role) VALUES (%s, %s, %s)",
-            (email, password, role)
-        )
+        cursor.execute("INSERT INTO users (email, password, role) VALUES (%s, %s, %s)", (email, password, role))
         conn.commit()
         conn.close()
         return jsonify({"message": "User registered successfully"})
@@ -180,10 +178,7 @@ def login():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT email, password, role FROM users WHERE email=%s",
-        (email,)
-    )
+    cursor.execute("SELECT email, password, role FROM users WHERE email=%s", (email,))
     user = cursor.fetchone()
     conn.close()
 
@@ -193,7 +188,6 @@ def login():
             'role': user['role'],
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=30)
         }, app.config['SECRET_KEY'], algorithm='HS256')
-
         return jsonify({"token": token})
 
     return jsonify({"message": "Invalid credentials"}), 401
@@ -202,11 +196,7 @@ def login():
 def get_flats():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('''
-        SELECT id, flat_no, rent, location, available, bedrooms, bathrooms, area_sqft,
-               swimming_pool, car_parking, bike_parking, gym, garden
-        FROM flats ORDER BY id
-    ''')
+    cursor.execute("SELECT * FROM flats ORDER BY id")
     flats = cursor.fetchall()
     conn.close()
     
@@ -227,7 +217,8 @@ def get_flats():
             },
             "bedrooms": flat['bedrooms'],
             "bathrooms": flat['bathrooms'],
-            "area_sqft": flat['area_sqft']
+            "area_sqft": flat['area_sqft'],
+            "image_url": flat.get('image_url', '/images/default-flat.jpg')
         })
     return jsonify(result)
 
@@ -240,10 +231,7 @@ def book_flat():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO bookings (user_email, flat_no, created_at) VALUES (%s, %s, %s)",
-        (email, flat_no, get_indian_time())
-    )
+    cursor.execute("INSERT INTO bookings (user_email, flat_no, created_at) VALUES (%s, %s, %s)", (email, flat_no, get_indian_time()))
     conn.commit()
     conn.close()
 
@@ -256,10 +244,7 @@ def my_bookings():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT id, flat_no, status, created_at, updated_at FROM bookings WHERE user_email=%s ORDER BY created_at DESC",
-        (user_email,)
-    )
+    cursor.execute("SELECT id, flat_no, status, created_at, updated_at FROM bookings WHERE user_email=%s ORDER BY created_at DESC", (user_email,))
     bookings = cursor.fetchall()
     conn.close()
 
@@ -281,9 +266,7 @@ def my_bookings():
 def admin_bookings():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT id, user_email, flat_no, status, created_at, updated_at FROM bookings ORDER BY created_at DESC"
-    )
+    cursor.execute("SELECT id, user_email, flat_no, status, created_at, updated_at FROM bookings ORDER BY created_at DESC")
     bookings = cursor.fetchall()
     conn.close()
 
@@ -300,6 +283,53 @@ def admin_bookings():
 
     return jsonify(result)
 
+@app.route('/admin/update-booking-status', methods=['POST'])
+@token_required
+@admin_required
+def update_booking_status():
+    print("=== UPDATE BOOKING STATUS CALLED ===")
+    print(f"Request method: {request.method}")
+    print(f"Request headers: {dict(request.headers)}")
+    print(f"Request data: {request.json}")
+    
+    try:
+        data = request.json
+        if not data:
+            print("ERROR: No JSON data received")
+            return jsonify({"success": False, "message": "No data provided"}), 400
+            
+        booking_id = data.get('booking_id')
+        status = data.get('status')
+        
+        print(f"Booking ID: {booking_id}, Status: {status}")
+        
+        if not booking_id or not status:
+            print("ERROR: Missing booking_id or status")
+            return jsonify({"success": False, "message": "Missing data"}), 400
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE bookings SET status=%s, updated_at=%s WHERE id=%s", (status, get_indian_time(), booking_id))
+        conn.commit()
+        conn.close()
+        
+        print("SUCCESS: Booking updated successfully")
+        return jsonify({"success": True, "message": "Status updated successfully"})
+        
+    except Exception as e:
+        print(f"ERROR: {str(e)}")
+        return jsonify({"success": False, "message": f"Error: {str(e)}"}), 500
+
+@app.route('/images/<filename>')
+def serve_image(filename):
+    return send_from_directory('images', filename)
+
+@app.route('/admin/update-status', methods=['POST'])
+@token_required
+@admin_required
+def update_status():
+    return update_booking_status()
+
 if __name__ == '__main__':
     init_database()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)

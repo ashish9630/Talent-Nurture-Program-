@@ -170,6 +170,84 @@
   background: #ff1744;
 }
 
+/* Info Button */
+.btn-info {
+  background: linear-gradient(to right, #2196f3, #1976d2);
+  color: #fff;
+}
+
+.btn-info:hover {
+  background: linear-gradient(to right, #1976d2, #2196f3);
+  box-shadow: 0 0 15px #2196f3;
+  transform: translateY(-2px);
+}
+
+/* Secondary */
+.btn-secondary {
+  background: #666;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: #777;
+}
+
+/* ===== IMAGE MODAL ===== */
+.image-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.image-modal {
+  background: #111;
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 90%;
+  box-shadow: 0 10px 30px rgba(0, 230, 118, 0.4);
+}
+
+.image-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #333;
+}
+
+.image-modal-header h3 {
+  margin: 0;
+  color: #00e676;
+}
+
+.close-btn {
+  font-size: 28px;
+  cursor: pointer;
+  color: #fff;
+  transition: 0.3s;
+}
+
+.close-btn:hover {
+  color: #ff5252;
+  transform: scale(1.2);
+}
+
+.image-modal-body {
+  padding: 20px;
+  text-align: center;
+}
+
+.flat-image {
+  max-width: 100%;
+  max-height: 500px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
 /* Disabled Button */
 button:disabled {
   background: #555;

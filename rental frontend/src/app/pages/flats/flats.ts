@@ -31,6 +31,8 @@ export class Flats implements OnInit {
   minRent: number = 10000;
   showBookingPopup = false;
   bookingMessage = '';
+  showImageModal = false;
+  selectedImage = '';
 
   constructor(
     private api: ApiService,
@@ -108,5 +110,14 @@ export class Flats implements OnInit {
 
   goToMyBookings() {
     this.router.navigate(['/my-bookings']);
+  }
+
+  viewImage(imageUrl: string) {
+    this.selectedImage = 'http://localhost:5000' + imageUrl;
+    this.showImageModal = true;
+  }
+
+  closeImageModal() {
+    this.showImageModal = false;
   }
 }

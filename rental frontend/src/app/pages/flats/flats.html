@@ -88,11 +88,16 @@
         <div class="status unavailable" *ngIf="!flat.available">❌ Not Available</div>
 
         <!-- Button -->
-        <button class="btn btn-primary"
-                (click)="bookFlat(flat.flat_no)"
-                [disabled]="!flat.available">
-          📋 {{ flat.available ? 'Book Now' : 'Not Available' }}
-        </button>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="btn btn-info" (click)="viewImage(flat.image_url)">
+            📷 View Image
+          </button>
+          <button class="btn btn-primary"
+                  (click)="bookFlat(flat.flat_no)"
+                  [disabled]="!flat.available">
+            📋 {{ flat.available ? 'Book Now' : 'Not Available' }}
+          </button>
+        </div>
 
       </div>
     </div>
@@ -102,6 +107,19 @@
   <div *ngIf="filteredFlats.length === 0" style="text-align:center; margin-top:40px;">
     <h3>😔 No flats found</h3>
     <button class="btn btn-primary" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Image Modal -->
+  <div class="image-modal-backdrop" *ngIf="showImageModal" (click)="closeImageModal()">
+    <div class="image-modal" (click)="$event.stopPropagation()">
+      <div class="image-modal-header">
+        <h3>🏠 Flat Image</h3>
+        <span class="close-btn" (click)="closeImageModal()">&times;</span>
+      </div>
+      <div class="image-modal-body">
+        <img [src]="selectedImage" alt="Flat Image" class="flat-image">
+      </div>
+    </div>
   </div>
 
   <!-- Popup -->
